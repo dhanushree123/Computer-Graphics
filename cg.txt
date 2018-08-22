@@ -1,0 +1,352 @@
+#include<GL/glut.h>
+int SCENE_ID;
+GLfloat title_fade,summary_para1_fade, summary_para2_fade, summary_para3_fade, summary_para4_fade,intro_next_text_appear, summary_next_text_appear;
+static GLfloat theta[] = {180.0,180.0,180.0};
+static GLint axis = 1;
+int lr=01,lr1=0,lr2=0;
+int ud=01,ud1=0,ud2=0;
+static int flag=0;
+float ball_x=2,ball_y=1.0,ball_z=1.3; 
+float ball_x1=-4.5,ball_y1=0.5;
+float ball_x2=4.5,ball_y2=-0.5;
+
+void print(char *string,GLfloat r, GLfloat g, GLfloat b, GLfloat a,GLint x, GLint y,GLfloat w, GLfloat h) {
+	glPushMatrix();
+	glColor4f(r, g, b, a);
+	glTranslatef(x, y, 0);
+	glScalef(w, h, 0);
+	while (*string)
+	glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN, *string++);
+	glPopMatrix();
+}
+
+void introduction() {
+	// Background
+	glClearColor(0.05, 0.5, 0.5, 0.5);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Story Title
+	print("EMOJI SCREENSAVER",
+		1, 1, 1, title_fade, 400, 480, .3, .3);
+
+	print("by Chinmayi V.Kulkarni and Dhanushree Rao",
+		1, 1, 1, title_fade, 790, 345, .12, .15);
+
+	print("(4MW15CS020 and 4MW15CS027)",
+		1, 1, 1, title_fade, 840, 320, .1, .1);
+
+	print("Press N to continue...",
+		1, 1, 1, intro_next_text_appear, 600, 200, .1, .1);
+}
+
+void summary() {
+	// Background
+	glClearColor(0.5, 0.5, 0.05, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Summary Title
+	print("Summary",
+		1, 1, 1, summary_para1_fade, 75, 650, .3, .3);
+
+	// Summary Text
+	print("PRESS N TO CONTINUE",
+		1, 1, 1, summary_para1_fade, 75, 575, .125, .125);
+	
+	print("PRESS B TO GO BACK",
+		1, 1, 1, summary_para1_fade, 75, 475, .125, .125);
+	
+	print("PRESS Q TO QUIT",
+		1, 1, 1, 1, 75, 375, .125, .125);
+	
+}
+void update(int) {
+	// Introduction
+	if (SCENE_ID == 0) {
+		if (title_fade < 1)
+			title_fade += .003;
+		else
+			intro_next_text_appear = 1;
+	}
+	
+	// Summary
+	if (SCENE_ID == 1) {
+		if (summary_para1_fade < 1)
+			summary_para1_fade += .02;
+		else
+			if (summary_para2_fade < 1)
+				summary_para2_fade += .02;
+			else
+				if (summary_para3_fade < 1)
+					summary_para3_fade += .02;
+				else
+					if (summary_para4_fade < 1)
+						summary_para4_fade += .02;
+					else
+						summary_next_text_appear = 1;
+	}
+
+	glutPostRedisplay();
+	
+	glutTimerFunc(25, update, 0);
+}
+void keyPress(unsigned char key, int x, int y) {
+	switch (key) {
+	// Go to Previous Scene
+	case 'b':
+	case 'B':
+		if (SCENE_ID == 0)
+			break;
+		SCENE_ID--;
+		break;
+	// Go to Next Scene
+	case 'n':
+	case 'N':
+		if (SCENE_ID == 15)
+			break;
+		SCENE_ID++;
+		break;
+	// Quit Story
+	case 'q':
+	case 'Q':
+		exit(0);
+		break;
+	default:
+		break;
+	}
+	glutPostRedisplay();
+}
+void initializeScreen() {
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(0, 1400, 0, 800);
+}
+void eyeright(float x,float y,float z)
+{
+    
+    glPushMatrix();
+   glTranslatef(x,y,z);
+   
+    glRotatef(-45,0,0,1);
+    glScalef(.9,.7,.7);            
+   glColor3f(0.0,0.0,0.0);               
+    gluSphere(gluNewQuadric(),.05,100,100);     
+    glPopMatrix();
+}
+void eyeleft(float x,float y,float z)
+{
+    glPushMatrix();
+    glTranslatef(x,y,z);	
+    glRotatef(45,0,0,1);  
+    glScalef(.9,.7,.7);   
+    glColor3f(0.0,0.0,0.0);  
+    gluSphere(gluNewQuadric(),.05,100,100); 
+   glPopMatrix();
+}
+void mouth()
+{
+	GLfloat x=0.00001,y=0,z=0;
+	glTranslatef(x,y,z);
+    	glPushMatrix();
+	glLineWidth(5);
+	glBegin(GL_LINES);
+	 glColor3f(0.0,0.0,0.0);                
+	 glVertex3f(x+0.4,0.15,0.5);       
+	 glVertex3f(x+0.55,0.13,0.5);       
+                glVertex3f(x+0.55,0.13,0.5);
+	glVertex3f(x+0.7,0.22,0.5);
+	glEnd();
+                glutPostRedisplay();
+	glPopMatrix();
+}
+
+void updateBall()
+{
+	if(ball_x>=2.50)lr=0;
+	if(ball_x<=-1.6)lr=1;
+	if(ball_y>=2.10)ud=0;
+	if(ball_y<=-1.9)ud=1;
+	if(lr==1)ball_x+=0.01;    
+	else ball_x-=0.01;
+	if(ud==1)ball_y+=0.01;
+	else ball_y-=0.01;
+	//ball2
+	if(ball_x1>=1.50)lr1=0;   
+	if(ball_x1<=-1.6)lr1=1;    
+	if(ball_y1>=1.50)ud1=0;     
+	if(ball_y1<=-1.6)ud1=1;       
+	if(lr1==1)ball_x1+=0.01;    
+	else ball_x1-=0.01;
+	if(ud1==1)ball_y1+=0.01;   
+	else ball_y1-=0.01;
+    //ball3
+    if(ball_x2>=2.50)lr2=0;
+	if(ball_x2<=-1.6)lr2=1;
+	if(ball_y2>=2.10)ud2=0;
+	if(ball_y2<=-1.9)ud2=1;
+	if(lr2==1)ball_x2+=0.01;
+	else ball_x2-=0.01;
+	if(ud2==1)ball_y2+=0.01;
+	else ball_y2-=0.01;
+}
+
+/*void *currentFont;
+void setFont(void *font)
+{
+	currentFont=font;
+}
+
+void drawstring(float x,float y,float z,char *string)
+{
+	char *c;
+	glColor3f(1.0,1.0,1.0);
+	glRasterPos3f(x,y,z);
+	for(c=string;*c!='\0';c++)
+	{
+		glutBitmapCharacter(currentFont,*c);
+	}
+}*/
+
+void myReshape(int w, int h)
+{
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    if (w <= h)
+        glOrtho(-2.0, 2.0, -2.0 * (GLfloat) h / (GLfloat) w,
+            2.0 * (GLfloat) h / (GLfloat) w, -10.0, 10.0);
+    else
+        glOrtho(-2.0 * (GLfloat) w / (GLfloat) h,
+            2.0 * (GLfloat) w / (GLfloat) h, -2.0, 2.0, -10.0, 10.0);
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void display()
+{
+	/*setFont(GLUT_BITMAP_8_BY_13);
+	drawstring(0,0,0,"Keep Smiling");*/
+	
+	glClearColor(0.0,0.0,0.0,1);
+     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluLookAt(2.3,1.3,2.0,0.0,0.25,0.0,0.0,1.0,0.0);
+
+	    glPushMatrix();
+	    glColor3f(1.0,1.0,0.0);
+      	   glPushMatrix();
+	     glTranslatef(ball_x,ball_y,ball_z);
+	     eyeright(0.83,0.45,0.65);
+	     eyeleft(0.6,0.4,0.75);
+		 glColor3f(0.0,0.0,1.0);//emoji colour
+	     glutSolidSphere(0.3,100,100);
+        	    mouth();
+	     glPopMatrix();
+	     glutPostRedisplay();
+	   glPopMatrix();
+//ball2
+		glPushMatrix();
+	    glColor3f(1.0,1.0,0.0);
+	    glPushMatrix();
+	    glTranslatef(ball_x1,ball_y1,0);   
+	    eyeright(0.83,0.45,0.65);
+	    eyeleft(0.6,0.4,0.75);
+	    glColor3f(1.0,0.0,1.0);
+	    glutSolidSphere(0.3,100,100);
+                     mouth();
+        	    glPopMatrix();
+	    glutPostRedisplay();
+	    glPopMatrix();
+//ball3
+	glPushMatrix();
+                 glColor3f(1.0,1.0,0.0);
+	glPushMatrix();
+	glTranslatef(ball_x2,ball_y2,0);    
+	eyeright(0.83,0.45,0.65);
+	eyeleft(0.6,0.4,0.75);
+	glColor3f(1.0,1.0,0.0);
+	glutSolidSphere(0.3,100,100);
+	mouth();
+        	glPopMatrix();
+	glutPostRedisplay();
+	glPopMatrix();
+  	glPushMatrix();
+	glutPostRedisplay();
+	glPopMatrix();
+	glPointSize(10.0);
+	updateBall();
+    	glutSwapBuffers();
+   	 glFlush();
+}
+void myinit()
+{
+	 
+	GLfloat matdiff[]={0.5f,0.5f,0.5f,1.0f};
+	GLfloat matamb[]={25.7f,500.7f,0.0f,0.1f};       
+    	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };   
+    	GLfloat mat_shininess[] = {50.0 };               
+	GLfloat lightinit[]={0.7f,0.7f,0.7f,1.0f};
+    	GLfloat lightpos[]={2.0f,6.0f,3.0f,0.0f};
+   	 glLightfv(GL_LIGHT0,GL_POSITION,lightpos);
+  	 glLightfv(GL_LIGHT0,GL_DIFFUSE,lightinit);                                            
+
+	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,matamb);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,matdiff);
+    	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+    	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+   
+    	glEnable(GL_LIGHTING);
+    	glEnable(GL_LIGHT0);
+   	 glEnable(GL_DEPTH_TEST);
+	glEnable(GL_COLOR_MATERIAL);
+	
+}
+void renderScene() {
+	
+	switch (SCENE_ID) {
+	case 0:
+		introduction();
+		break;
+    case 1:
+		summary();
+		break;
+
+	case 2:
+       	myinit();
+      	glutReshapeFunc (myReshape);
+	glutDisplayFunc(display);
+		break;
+	default:
+		break;
+	}
+
+	
+	glFlush();
+}
+
+int main(int argc, char **argv) {
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
+	glutInitWindowPosition(0, 0);
+	glutInitWindowSize(1400, 800);
+	glutCreateWindow("Emoji ScreenSaver");// Enables Transparency
+	
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    	glEnable(GL_BLEND);
+	
+	glEnable(GL_LINE_SMOOTH);// Enable Smoothening
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);                   
+	
+	glutDisplayFunc(renderScene);
+
+	glutKeyboardFunc(keyPress);                                      	
+	
+	initializeScreen();
+	                                                                 
+	glutTimerFunc(25, update, 0);
+	glutMainLoop();
+	return 0;
+}
+
+
+
